@@ -1,0 +1,39 @@
+Gled HEP libsets
+Copyright (C) 2005-2026 Matevz Tadel.
+
+The libsets in this repository are free software: you can redistribute them
+and/or modify them under the terms of the GNU Lesser General Public License
+as published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+They are distributed in the hope that they will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
+more details.
+
+The GNU Lesser General Public License, version 3, is in COPYING.LESSER. It
+supplements the GNU General Public License, version 3, which is in COPYING.
+
+Third-party code in this repository keeps its own terms:
+
+  XrdMon/XrdMon/XrdXrootdMonData.h
+      The monitoring packet definitions of XRootD, (c) 2004 by the Board of
+      Trustees of the Leland Stanford, Jr., University, produced by Andrew
+      Hanushevsky. XRootD is distributed under the GNU Lesser General
+      Public License, version 3 or later.
+  XrdMon/etc/gled/functions/read_ini.sh
+      bash_ini_parser, Copyright (C) 2009 Kevin Porter / Advanced Web
+      Construction Ltd and (C) 2010-2014 Ruediger Meier. BSD license; see
+      read_ini.LICENSE there.
+
+Images in this repository with their own terms:
+
+  AliEnViz/demos/imgs/land_ocean_ice_2048.jpg
+      The Blue Marble: Land Surface, Ocean Color and Sea Ice, NASA Visible
+      Earth (image record 57730). NASA Goddard Space Flight Center image by
+      Reto Stöckli (land surface, shallow water, clouds), enhancements by
+      Robert Simmon (ocean color, compositing). Data: MODIS Land Group,
+      MODIS Science Data Support Team, MODIS Atmosphere Group, MODIS Ocean
+      Group; USGS EROS Data Center (topography); USGS Terrestrial Remote
+      Sensing Flagstaff Field Center (Antarctica). Not subject to copyright
+      in the United States; credit NASA when using it.

@@ -1,0 +1,69 @@
+// Copyright (C) Matevz Tadel.
+// This file is part of Gled.
+// SPDX-License-Identifier: LGPL-3.0-or-later
+
+#ifndef XrdMon_XrdUser_H
+#define XrdMon_XrdUser_H
+
+#include <Glasses/ZList.h>
+#include <Gled/GTime.h>
+
+namespace gled {
+
+class XrdServer;
+class XrdFile;
+
+class XrdUser : public ZList
+{
+  MAC_RNR_FRIENDS(XrdUser);
+  friend class XrdServer;
+
+private:
+  UInt_t            m_dict_id;       //!
+
+  void _init();
+
+protected:
+  TString           mRealName;       // X{GR}   7 TextOut()
+  TString           mDN;             // X{GR}   7 TextOut()
+  TString           mVO;             // X{GR}   7 TextOut()
+  TString           mRole;           // X{GR}   7 TextOut()
+  TString           mGroup;          // X{GR}   7 TextOut()
+  TString           mServerUsername; // X{GR}   7 TextOut()
+  TString           mFromHost;       // X{GR}   7 TextOut()
+  TString           mFromDomain;     // X{GR}   7 TextOut()
+  TString           mProtocol;       // X{GR}   7 TextOut()
+  Bool_t            bNumericHost;    // X{G}    7 BoolOut()
+  TString           mAppInfo;        // X{GR}   7 TextOut()
+  GTime             mLoginTime;      // X{GR}   7 TimeOut()
+  GTime             mDisconnectTime; // X{GRSQ} 7 TimeOut()
+  GTime             mLastMsgTime;    // X{GRSQ} 7 TimeOut()
+
+  ZLink<XrdServer>  mServer;         // X{GS} L{}
+
+public:
+  XrdUser(const TString& n="XrdUser", const TString& t="");
+  XrdUser(const TString& n, const TString& t, 
+	  const TString& dn, const TString& vo, const TString& ro, const TString& gr,
+          const TString& su, const TString& fh, const TString& fd, Bool_t num_host,
+          const GTime& st);
+  virtual ~XrdUser();
+
+  TString GetFromFqhn() const;
+
+  Bool_t IsConnected() const { return mDisconnectTime.IsNever() && ! mLoginTime.IsNever(); }
+
+  void AddFile(XrdFile* file);
+
+  void AppendAppInfo(const TString& app_info);
+
+  static TString    ParseHumanName(const TString& dn);
+  static TString    ParseProtocol (const TString& nn);
+
+#include "XrdUser.h7"
+  ClassDef(XrdUser, 1);
+}; // endclass XrdUser
+
+} // endnamespace gled
+
+#endif

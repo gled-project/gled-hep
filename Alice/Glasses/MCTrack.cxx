@@ -1,0 +1,166 @@
+// Copyright (C) Matevz Tadel.
+// This file is part of Gled.
+// SPDX-License-Identifier: LGPL-3.0-or-later
+
+//__________________________________________________________________________
+// MCTrack
+//
+//
+
+#include "MCTrack.h"
+#include <Glasses/VSDSelector.h>
+using namespace gled;
+#include "MCTrack.c7"
+#include <Glasses/ZQueen.h>
+
+#include <TParticlePDG.h>
+
+typedef std::list<MCTrack*>                   lpMCTrack_t;
+typedef std::list<MCTrack*>::iterator         lpMCTrack_i;
+
+/**************************************************************************/
+
+void MCTrack::_init()
+{
+  mParticle   = 0;
+  mNDaughters = 0;
+}
+
+MCTrack::MCTrack(TEveMCTrack* p, const Text_t* n, const Text_t* t) :
+  TrackBase(n,t) 
+{
+  _init();
+  // TParticlePDG* pdgp = TDatabasePDG::Instance()->GetParticle(p->GetPdgCode());
+  TParticlePDG* pdgp = p->GetPDG();
+  if(pdgp == 0) {
+    p->ResetPdgCode(); pdgp = p->GetPDG();
+  }
+  mParticle = p;
+  SetName(GForm("%s %d", pdgp->GetName(), p->fLabel));
+
+  mNDaughters = p->GetNDaughters();
+  if(mParticle->fDecayed) mVDecay = GForm("% 4.f, % 4.f, % 4.f", mParticle->fVDecay.fX, mParticle->fVDecay.fY, mParticle->fVDecay.fZ);
+  mV = GForm("% 4.f, % 4.f, % 4.f", mParticle->Vx(), mParticle->Vy(), mParticle->Vz());
+  mP = GForm("% 6.3f, % 6.3f, % 6.3f", mParticle->Px(), mParticle->Py(), mParticle->Pz());
+}
+
+/**************************************************************************/
+
+void MCTrack::ImportDaughters(VSDSelector* sel)
+{
+  static const Exc_t _eh("MCTrack::ImportDaughters");
+  if (sel == 0) {
+    sel = GrepParentByGlass<VSDSelector>();
+    if(sel == 0) throw(_eh + "can't set VSDSelector.");
+  }
+  Int_t d0 =  mParticle->GetDaughter(0), d1 = mParticle->GetDaughter(1);
+  if ( mParticle->GetNDaughters() == 0 ) return;
+  for(int i=d0; i<=d1; ++i) {
+    TEveMCTrack* tp = sel->Particle(i);
+    MCTrack* p = new MCTrack(tp, GForm("%d %s", i, tp->GetName())); 
+    mQueen->CheckIn(p);Add(p);
+  }
+  mStampReqTring = Stamp(FID());
+}
+
+void MCTrack::ImportDaughtersRec(VSDSelector* sel)
+{
+  static const Exc_t _eh("MCTrack::ImportDaughters");
+  if (sel == 0) {
+    sel = GrepParentByGlass<VSDSelector>();
+    if(sel == 0) throw(_eh + "can't set VSDSelector.");
+  }
+
+  Int_t d0 =  mParticle->GetDaughter(0), d1 = mParticle->GetDaughter(1);
+  if ( mParticle->GetNDaughters() == 0 ) return;
+  for(int i=d0; i<=d1; ++i) {
+    // printf("%s ImportDaughtersRec :: new particle idx %d \n",GetName(), i);
+    TEveMCTrack* tp = sel->Particle(i);
+    MCTrack* p = new MCTrack(tp, GForm("%d %s", i, tp->GetName())); 
+    mQueen->CheckIn(p);Add(p);
+    p->ImportDaughtersRec(sel);
+  }
+  mStampReqTring = Stamp(FID());
+}
+
+/**************************************************************************/
+
+void MCTrack::ImportHits(VSDSelector* sel, Bool_t from_primary)
+{
+  static const Exc_t _eh("MCTrack::ImportHits ");
+  if (sel == 0) {
+    sel = GrepParentByGlass<VSDSelector>();
+    if(sel == 0) throw(_eh + "can't set VSDSelector.");
+  }
+  char selection[128];
+  if(from_primary){
+    sprintf (selection, "fEvaLabel==%d", mParticle->fLabel);
+  } else {
+    sprintf (selection, "fLabel==%d", mParticle->fLabel);
+  }
+  sel->SelectHits(this, selection);
+}
+
+/**************************************************************************/
+
+void MCTrack::ImportClusters(VSDSelector* sel, Bool_t from_primary)
+{
+  static const Exc_t _eh("MCTrack::ImportClusters ");
+  if (sel == 0) {
+    sel = GrepParentByGlass<VSDSelector>();
+    if(sel == 0) throw(_eh + "can't set VSDSelector.");
+  }
+  char selection[128];
+  if(from_primary){
+    sprintf (selection, "fEvaLabel==%d", mParticle->fLabel);
+  } else {
+    sprintf (selection, "fLabel==%d", mParticle->fLabel);
+  }
+  sel->SelectClusters(this, selection);
+}
+
+/**************************************************************************/
+
+void MCTrack::SetDecayFromDaughter()
+{
+  MCTrack* last_d = dynamic_cast<MCTrack*>(BackElement());
+  if(last_d) {
+    mParticle->fDecayed = true;
+    mParticle->fVDecay.fX = last_d->mParticle->Vx();
+    mParticle->fVDecay.fY = last_d->mParticle->Vy();
+    mParticle->fVDecay.fZ = last_d->mParticle->Vz();
+  } else {
+    mParticle->fDecayed = false;
+  }
+  mStampReqTring = Stamp(FID());
+}
+
+void MCTrack::ClearDecay()
+{
+  mParticle->fDecayed = false;
+  mStampReqTring = Stamp(FID());
+}
+
+/**************************************************************************/
+
+void MCTrack::Dump()
+{
+  printf("MCTrack %s, v(%3.f, %3.f, %3.f), p(%6.5f, %6.5f, %6.5f), m(%.3f)\n", 
+         GetName(),
+	 mParticle->Vx(), mParticle->Vy(), mParticle->Vz(),
+         mParticle->Px(), mParticle->Py(), mParticle->Pz(),
+         mParticle->GetMass());
+
+  
+  printf("MCTrack %s, decay  v(%3.f, %3.f, %3.f), p(%6.4f, %6.4f, %6.4f), t(%f) \n",
+	 GetName(),
+	 mParticle->fVDecay.fX, mParticle->fVDecay.fY, mParticle->fVDecay.fZ,
+	 mParticle->fPDecay.fX, mParticle->fPDecay.fY, mParticle->fPDecay.fZ,
+	 mParticle->fTDecay);
+ 
+}
+
+
+
+
+
