@@ -13,6 +13,9 @@ main repository.
 
 Each libset has its macros in `demos/`. `XrdMon/etc/` holds the init script,
 cron check and logrotate file that ran the XrdMon collectors at UCSD.
+`XrdMon/docs/` holds the XrdMon documentation from the gled.org wiki
+(2012-2014): an overview of XRootD monitoring and of the libset,
+installation, the summary-monitoring collector, and notes on Net1.
 
 ## Building
 
