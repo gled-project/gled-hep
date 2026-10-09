@@ -1,14 +1,6 @@
 #!/bin/bash
-# Generates the tileable textures of the AliEnViz demos with ImageMagick 7:
-#
-#   fire.jpg     512x512  orange swirls on black         (Gled sphere)
-#   marble.jpg   512x512  beige marble with brown veins  (gLite sphere)
-#   chrome.jpg   256x256  embossed metal, yellow tint    (DA User sphere)
-#   ice.jpg      256x256  blue cloudy fractal            (PROOF sphere)
-#
-# The textures tile: the noise is blurred and shaded with
-# -virtual-pixel tile, so it wraps around the edges, and the marble veins
-# are periodic in x. The seeds make the output reproducible.
+# Generates the tileable textures of the AliEnViz demo spheres (fire, marble,
+# chrome, ice) with ImageMagick 7; fixed seeds make them reproducible.
 
 set -e
 cd "$(dirname "$0")"
