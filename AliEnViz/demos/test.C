@@ -8,9 +8,6 @@
 #include "gled_view_globals.C"
 #include "eye.C"
 
-#pragma cling load("libGeom1.so")
-#pragma cling load("libAliEnViz.so")
-
 using namespace gled;
 
 /**************************************************************************/

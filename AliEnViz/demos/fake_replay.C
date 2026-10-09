@@ -6,9 +6,6 @@
 #include "sun.C"
 #include "alienviz_common_foos.C"
 
-#pragma cling load("libGeom1.so")
-#pragma cling load("libAliEnViz.so")
-
 using namespace gled;
 
 /**************************************************************************/

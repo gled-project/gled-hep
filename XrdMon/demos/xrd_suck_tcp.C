@@ -14,8 +14,6 @@
 #include "sun.C"
 #include "eye.C"
 
-#pragma cling load("libXrdMon.so")
-
 using namespace gled;
 
 ZLog               *c_log  = 0;

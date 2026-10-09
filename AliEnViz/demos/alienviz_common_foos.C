@@ -5,9 +5,6 @@
 #include "gled_view_globals.C"
 #include "eye.C"
 
-#pragma cling load("libGeom1.so")
-#pragma cling load("libAliEnViz.so")
-
 using namespace gled;
 
 void init_texture(ZImage* tex, const char* fname, bool loadp=true);

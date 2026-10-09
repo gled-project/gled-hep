@@ -11,10 +11,6 @@
 
 #include "sun.C"
 
-#pragma cling load("libGeom1.so")
-#pragma cling load("libRootGeo.so")
-#pragma cling load("libAlice.so")
-
 using namespace gled;
 
 ZGeoNode*     volt      = 0;
