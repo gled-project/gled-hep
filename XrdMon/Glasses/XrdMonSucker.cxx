@@ -768,12 +768,12 @@ void XrdMonSucker::Suck()
             if (tt == XROOTD_MON_OPEN)
             {
               msg += GForm("\n\tOpen file='%s'", file ? file->GetName() : "<nil>");
-              union { Long64_t val; UChar_t id[8]; } jebo;
-              jebo.val = xmt.arg0.val;
-              jebo.id[0] = 0;
+              union { Long64_t val; UChar_t id[8]; } fsz;
+              fsz.val = xmt.arg0.val;
+              fsz.id[0] = 0;
 
 	      GLensReadHolder _lck(file);
-              file->SetSizeMB(net2host(jebo.val) / One_MB);
+              file->SetSizeMB(net2host(fsz.val) / One_MB);
 	      // This should, in principle, be always true ... but some
 	      // pre-3.1 xrootds can get this screwed up pretty badly.
 	      if (lc.fTime < file->RefOpenTime())
